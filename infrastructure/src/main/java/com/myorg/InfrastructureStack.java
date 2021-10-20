@@ -39,6 +39,13 @@ public class InfrastructureStack extends Stack {
                 "&& cp /asset-input/FunctionTwo/target/function.zip /asset-output/"
         );
 
+        List<String> functionThreePackagingInstructions = Arrays.asList(
+                "-c",
+                "cd FunctionThree " +
+                        "&& mvn clean install -P native -D skipTests " +
+                        "&& cp /asset-input/FunctionThree/target/function.zip /asset-output/"
+        );
+
         BundlingOptions.Builder builderOptions = BundlingOptions.builder()
                 .command(functionOnePackagingInstructions)
                 .image(DockerImage.fromRegistry("marksailes/al2-graalvm:al2-21.2.0"))
@@ -79,13 +86,27 @@ public class InfrastructureStack extends Stack {
                 .logRetention(RetentionDays.ONE_WEEK)
                 .build());
 
+        Function functionThree = new Function(this, "FunctionThree", FunctionProps.builder()
+                .runtime(Runtime.PROVIDED_AL2)
+                .code(Code.fromAsset("../software/", AssetOptions.builder()
+                        .bundling(builderOptions
+                                .command(functionThreePackagingInstructions)
+                                .build())
+                        .build()))
+                .functionName("FunctionThreeDynamo")
+                .handler("org.springframework.cloud.function.adapter.aws.FunctionInvoker::handleRequest")
+                .memorySize(256)
+                .timeout(Duration.seconds(10))
+                .logRetention(RetentionDays.ONE_WEEK)
+                .build());
+
         HttpApi httpApi = new HttpApi(this, "sample-api", HttpApiProps.builder()
                 .apiName("sample-api")
                 .build());
 
         httpApi.addRoutes(AddRoutesOptions.builder()
                 .path("/one")
-                .methods(singletonList(HttpMethod.GET))
+                .methods(singletonList(HttpMethod.POST))
                 .integration(new LambdaProxyIntegration(LambdaProxyIntegrationProps.builder()
                         .handler(functionOne)
                         .payloadFormatVersion(PayloadFormatVersion.VERSION_2_0)
@@ -94,9 +115,18 @@ public class InfrastructureStack extends Stack {
 
         httpApi.addRoutes(AddRoutesOptions.builder()
                 .path("/two")
-                .methods(singletonList(HttpMethod.GET))
+                .methods(singletonList(HttpMethod.POST))
                 .integration(new LambdaProxyIntegration(LambdaProxyIntegrationProps.builder()
                         .handler(functionTwo)
+                        .payloadFormatVersion(PayloadFormatVersion.VERSION_2_0)
+                        .build()))
+                .build());
+
+        httpApi.addRoutes(AddRoutesOptions.builder()
+                .path("/three")
+                .methods(singletonList(HttpMethod.POST))
+                .integration(new LambdaProxyIntegration(LambdaProxyIntegrationProps.builder()
+                        .handler(functionThree)
                         .payloadFormatVersion(PayloadFormatVersion.VERSION_2_0)
                         .build()))
                 .build());
