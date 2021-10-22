@@ -110,6 +110,7 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>2.5.5</version>
                 <configuration>
                     <mainClass>helloworld.App</mainClass>
                     <classifier>${repackage.classifier}</classifier>
