@@ -1,0 +1,5 @@
+amazon:
+  aws:
+    accesskey: ${AWS_ACCESS_KEY}
+    secretkey: ${AWS_SECRET_ACCESS_KEY}
+    test: test

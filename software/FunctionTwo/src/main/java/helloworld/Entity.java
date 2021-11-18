@@ -1,12 +1,5 @@
-package helloworld.model;
+package helloworld;
 
-import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbAttribute;
-import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean;
-import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbPartitionKey;
-import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSortKey;
-
-
-@DynamoDbBean
 public class Entity {
 
     public static final String TABLE_NAME = "entity-table-dev";
@@ -22,8 +15,7 @@ public class Entity {
         this.name = name;
     }
 
-    @DynamoDbPartitionKey
-    @DynamoDbAttribute("pk")
+
     public String getPk() {
         return pk;
     }
@@ -32,8 +24,7 @@ public class Entity {
         this.pk = pk;
     }
 
-    @DynamoDbSortKey
-    @DynamoDbAttribute("sk")
+
     public String getSk() {
         return sk;
     }
@@ -42,7 +33,7 @@ public class Entity {
         this.sk = sk;
     }
 
-    @DynamoDbAttribute("name")
+
     public String getName() {
         return name;
     }

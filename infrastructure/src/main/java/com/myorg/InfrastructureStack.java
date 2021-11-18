@@ -12,7 +12,9 @@ import software.amazon.awscdk.services.logs.RetentionDays;
 import software.amazon.awscdk.services.s3.assets.AssetOptions;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static java.util.Collections.singletonList;
 import static software.amazon.awscdk.core.BundlingOutput.ARCHIVED;
@@ -24,6 +26,11 @@ public class InfrastructureStack extends Stack {
 
     public InfrastructureStack(final Construct parent, final String id, final StackProps props) {
         super(parent, id, props);
+
+        Map<String, String> environmentVariables = new HashMap<>();
+        environmentVariables.put("FUNC3_ACCESS_KEY", System.getenv("AWS_ACCESS_KEY"));
+        environmentVariables.put("FUNC3_SECRET_ACCESS_KEY", System.getenv("AWS_SECRET_ACCESS_KEY"));
+        environmentVariables.put("TEST", "test");
 
         List<String> functionOnePackagingInstructions = Arrays.asList(
                 "-c",
@@ -98,6 +105,7 @@ public class InfrastructureStack extends Stack {
                 .memorySize(256)
                 .timeout(Duration.seconds(10))
                 .logRetention(RetentionDays.ONE_WEEK)
+                .environment(environmentVariables)
                 .build());
 
         HttpApi httpApi = new HttpApi(this, "sample-api", HttpApiProps.builder()
@@ -112,7 +120,7 @@ public class InfrastructureStack extends Stack {
                         .payloadFormatVersion(PayloadFormatVersion.VERSION_2_0)
                         .build()))
                 .build());
-
+//
         httpApi.addRoutes(AddRoutesOptions.builder()
                 .path("/two")
                 .methods(singletonList(HttpMethod.POST))

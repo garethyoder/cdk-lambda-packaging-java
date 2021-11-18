@@ -1,4 +1,9 @@
 amazon:
   aws:
-    accesskey:
-    secretkey:
+    accesskey: ${FUNC3_ACCESS_KEY}
+    secretkey: ${FUNC3_SECRET_ACCESS_KEY}
+    test: ${TEST}
+spring:
+  cloud:
+    function:
+      definition: save

@@ -35,6 +35,14 @@
             <artifactId>spring-native</artifactId>
             <version>0.10.4</version>
         </dependency>
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>dynamodb</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>dynamodb-enhanced</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>com.amazonaws</groupId>
@@ -59,18 +67,18 @@
             <version>2.5.5</version>
             <optional>true</optional>
         </dependency>
-        <dependency>
-            <groupId>com.amazonaws</groupId>
-            <artifactId>aws-java-sdk-core</artifactId>
-            <version>1.12.79</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.amazonaws</groupId>
-            <artifactId>aws-java-sdk-dynamodb</artifactId>
-            <version>1.12.79</version>
-            <scope>compile</scope>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>com.amazonaws</groupId>-->
+<!--            <artifactId>aws-java-sdk-core</artifactId>-->
+<!--            <version>1.12.79</version>-->
+<!--            <scope>compile</scope>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>com.amazonaws</groupId>-->
+<!--            <artifactId>aws-java-sdk-dynamodb</artifactId>-->
+<!--            <version>1.12.79</version>-->
+<!--            <scope>compile</scope>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>
@@ -106,6 +114,13 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+            <dependency>
+                <groupId>software.amazon.awssdk</groupId>
+                <artifactId>bom</artifactId>
+                <version>2.16.1</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -131,6 +146,7 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>2.5.6</version>
                 <configuration>
                     <mainClass>helloworld.App</mainClass>
                     <classifier>${repackage.classifier}</classifier>
@@ -191,7 +207,7 @@
             <id>native</id>
             <properties>
                 <repackage.classifier>exec</repackage.classifier>
-                <native-buildtools.version>0.9.3</native-buildtools.version>
+                <native-buildtools.version>0.9.7.1</native-buildtools.version>
                 <mainClass>helloworld.App</mainClass>
             </properties>
 

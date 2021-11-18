@@ -15,7 +15,11 @@ public class App {
 
     @Bean
     public Function<String, String> lowercase() {
-        return String::toLowerCase;
+        return value -> {
+            Entity entity = new Entity("pk", "sk", value);
+            return entity.getPk();
+        };
+
     }
 
 }
