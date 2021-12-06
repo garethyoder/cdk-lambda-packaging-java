@@ -4,6 +4,7 @@ import software.amazon.awscdk.core.*;
 import software.amazon.awscdk.services.apigatewayv2.*;
 import software.amazon.awscdk.services.apigatewayv2.integrations.LambdaProxyIntegration;
 import software.amazon.awscdk.services.apigatewayv2.integrations.LambdaProxyIntegrationProps;
+import software.amazon.awscdk.services.iam.*;
 import software.amazon.awscdk.services.lambda.Code;
 import software.amazon.awscdk.services.lambda.Function;
 import software.amazon.awscdk.services.lambda.FunctionProps;
@@ -28,8 +29,8 @@ public class InfrastructureStack extends Stack {
         super(parent, id, props);
 
         Map<String, String> environmentVariables = new HashMap<>();
-        environmentVariables.put("FUNC3_ACCESS_KEY", System.getenv("AWS_ACCESS_KEY"));
-        environmentVariables.put("FUNC3_SECRET_ACCESS_KEY", System.getenv("AWS_SECRET_ACCESS_KEY"));
+        // environmentVariables.put("FUNC3_ACCESS_KEY", System.getenv("AWS_ACCESS_KEY"));
+        // environmentVariables.put("FUNC3_SECRET_ACCESS_KEY", System.getenv("AWS_SECRET_ACCESS_KEY"));
         environmentVariables.put("TEST", "test");
 
         List<String> functionOnePackagingInstructions = Arrays.asList(
@@ -65,33 +66,44 @@ public class InfrastructureStack extends Stack {
                 .user("root")
                 .outputType(ARCHIVED);
 
-        Function functionOne = new Function(this, "FunctionOne", FunctionProps.builder()
-                .runtime(Runtime.PROVIDED_AL2)
-                .code(Code.fromAsset("../software/", AssetOptions.builder()
-                        .bundling(builderOptions
-                                .command(functionOnePackagingInstructions)
-                                .build())
-                        .build()))
-                .functionName("FunctionOneUppercase")
-                .handler("org.springframework.cloud.function.adapter.aws.FunctionInvoker::handleRequest")
-                .memorySize(256)
-                .timeout(Duration.seconds(10))
-                .logRetention(RetentionDays.ONE_WEEK)
+//        Function functionOne = new Function(this, "FunctionOne", FunctionProps.builder()
+//                .runtime(Runtime.PROVIDED_AL2)
+//                .code(Code.fromAsset("../software/", AssetOptions.builder()
+//                        .bundling(builderOptions
+//                                .command(functionOnePackagingInstructions)
+//                                .build())
+//                        .build()))
+//                .functionName("FunctionOneUppercase")
+//                .handler("org.springframework.cloud.function.adapter.aws.FunctionInvoker::handleRequest")
+//                .memorySize(256)
+//                .timeout(Duration.seconds(10))
+//                .logRetention(RetentionDays.ONE_WEEK)
+//                .build());
+//
+//        Function functionTwo = new Function(this, "FunctionTwo", FunctionProps.builder()
+//                .runtime(Runtime.PROVIDED_AL2)
+//                .code(Code.fromAsset("../software/", AssetOptions.builder()
+//                        .bundling(builderOptions
+//                                .command(functionTwoPackagingInstructions)
+//                                .build())
+//                        .build()))
+//                .functionName("FunctionTwoLowercase")
+//                .handler("org.springframework.cloud.function.adapter.aws.FunctionInvoker::handleRequest")
+//                .memorySize(256)
+//                .timeout(Duration.seconds(10))
+//                .logRetention(RetentionDays.ONE_WEEK)
+//                .build());
+
+        Role functionThreeRole = new Role(this, "functionThreeRole", RoleProps.builder()
+                .roleName("functionThreeRole")
+                .assumedBy(new ServicePrincipal("lambda.amazonaws.com"))
+                .managedPolicies(Arrays.asList(
+                        ManagedPolicy.fromAwsManagedPolicyName("service-role/AWSLambdaVPCAccessExecutionRole"),
+                        ManagedPolicy.fromAwsManagedPolicyName("service-role/AWSLambdaBasicExecutionRole"),
+                        ManagedPolicy.fromAwsManagedPolicyName("AmazonDynamoDBFullAccess")
+                ))
                 .build());
 
-        Function functionTwo = new Function(this, "FunctionTwo", FunctionProps.builder()
-                .runtime(Runtime.PROVIDED_AL2)
-                .code(Code.fromAsset("../software/", AssetOptions.builder()
-                        .bundling(builderOptions
-                                .command(functionTwoPackagingInstructions)
-                                .build())
-                        .build()))
-                .functionName("FunctionTwoLowercase")
-                .handler("org.springframework.cloud.function.adapter.aws.FunctionInvoker::handleRequest")
-                .memorySize(256)
-                .timeout(Duration.seconds(10))
-                .logRetention(RetentionDays.ONE_WEEK)
-                .build());
 
         Function functionThree = new Function(this, "FunctionThree", FunctionProps.builder()
                 .runtime(Runtime.PROVIDED_AL2)
@@ -106,29 +118,30 @@ public class InfrastructureStack extends Stack {
                 .timeout(Duration.seconds(10))
                 .logRetention(RetentionDays.ONE_WEEK)
                 .environment(environmentVariables)
+                .role(functionThreeRole)
                 .build());
 
         HttpApi httpApi = new HttpApi(this, "sample-api", HttpApiProps.builder()
                 .apiName("sample-api")
                 .build());
 
-        httpApi.addRoutes(AddRoutesOptions.builder()
-                .path("/one")
-                .methods(singletonList(HttpMethod.POST))
-                .integration(new LambdaProxyIntegration(LambdaProxyIntegrationProps.builder()
-                        .handler(functionOne)
-                        .payloadFormatVersion(PayloadFormatVersion.VERSION_2_0)
-                        .build()))
-                .build());
-//
-        httpApi.addRoutes(AddRoutesOptions.builder()
-                .path("/two")
-                .methods(singletonList(HttpMethod.POST))
-                .integration(new LambdaProxyIntegration(LambdaProxyIntegrationProps.builder()
-                        .handler(functionTwo)
-                        .payloadFormatVersion(PayloadFormatVersion.VERSION_2_0)
-                        .build()))
-                .build());
+//        httpApi.addRoutes(AddRoutesOptions.builder()
+//                .path("/one")
+//                .methods(singletonList(HttpMethod.POST))
+//                .integration(new LambdaProxyIntegration(LambdaProxyIntegrationProps.builder()
+//                        .handler(functionOne)
+//                        .payloadFormatVersion(PayloadFormatVersion.VERSION_2_0)
+//                        .build()))
+//                .build());
+////
+//        httpApi.addRoutes(AddRoutesOptions.builder()
+//                .path("/two")
+//                .methods(singletonList(HttpMethod.POST))
+//                .integration(new LambdaProxyIntegration(LambdaProxyIntegrationProps.builder()
+//                        .handler(functionTwo)
+//                        .payloadFormatVersion(PayloadFormatVersion.VERSION_2_0)
+//                        .build()))
+//                .build());
 
         httpApi.addRoutes(AddRoutesOptions.builder()
                 .path("/three")

@@ -1,8 +1,6 @@
 amazon:
   aws:
-    accesskey: ${FUNC3_ACCESS_KEY}
-    secretkey: ${FUNC3_SECRET_ACCESS_KEY}
-    test: ${TEST}
+    region: us-east-1
 spring:
   cloud:
     function:
