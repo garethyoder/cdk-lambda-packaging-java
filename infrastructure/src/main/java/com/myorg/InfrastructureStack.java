@@ -32,6 +32,7 @@ public class InfrastructureStack extends Stack {
         // environmentVariables.put("FUNC3_ACCESS_KEY", System.getenv("AWS_ACCESS_KEY"));
         // environmentVariables.put("FUNC3_SECRET_ACCESS_KEY", System.getenv("AWS_SECRET_ACCESS_KEY"));
         environmentVariables.put("TEST", "test");
+        environmentVariables.put("spring_cloud_function_definition", "get");
 
         List<String> functionOnePackagingInstructions = Arrays.asList(
                 "-c",
@@ -121,8 +122,8 @@ public class InfrastructureStack extends Stack {
                 .role(functionThreeRole)
                 .build());
 
-        HttpApi httpApi = new HttpApi(this, "sample-api", HttpApiProps.builder()
-                .apiName("sample-api")
+        HttpApi httpApi = new HttpApi(this, "chescolp-api", HttpApiProps.builder()
+                .apiName("Chescolp")
                 .build());
 
 //        httpApi.addRoutes(AddRoutesOptions.builder()

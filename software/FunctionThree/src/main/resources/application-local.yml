@@ -3,3 +3,6 @@ amazon:
     accesskey: ${AWS_ACCESS_KEY}
     secretkey: ${AWS_SECRET_ACCESS_KEY}
     test: test
+spring:
+  main:
+    web-application-type: SERVLET

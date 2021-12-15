@@ -2,6 +2,8 @@ amazon:
   aws:
     region: us-east-1
 spring:
+  main:
+    web-application-type: NONE
   cloud:
     function:
       definition: save
